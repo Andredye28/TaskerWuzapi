@@ -8,11 +8,11 @@ echo "Git e Go foram instalados com sucesso."
 
 # Clonar o repositório tasker-wuzapi
 echo "Clonando o repositório tasker-wuzapi..."
-git clone https://github.com/Andredye28/tasker-wuzapi &>/dev/null
+git clone https://github.com/Andredye28/tasker_wuzapi &>/dev/null
 echo "Repositório clonado com sucesso."
 
 # Navegar até o diretório do projeto
-cd tasker-wuzapi
+cd tasker_wuzapi
 
 # Compilar o binário do WuzAPI
 echo "Compilando o binário..."
