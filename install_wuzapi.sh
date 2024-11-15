@@ -1,4 +1,4 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/bin/bash
 echo "##### ESTE PROCESO TARDARA ENTRE 15 A 20 MINUTOS #####"
 
 # Instalar Git e Go
