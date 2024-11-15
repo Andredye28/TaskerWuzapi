@@ -1,5 +1,12 @@
 #!/bin/bash
-echo "##### ESTE PROCESO TARDARA ENTRE 15 A 20 MINUTOS #####"
+echo -e "\e[31m
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+.   Procedimento entre 5 e 15 minutos - por favor, aguarde.   .
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+\e[32m
+                         Criado por Andredye
+\e[0m"
+
 
 # Instalar Git e Go
 echo "Instalando Git e Go..."
