@@ -1,4 +1,4 @@
 #!/bin/bash/
 
-cd TaskerWuzapi
+cd tasker_wuzapi
 ./wuzapi
