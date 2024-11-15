@@ -1,10 +1,6 @@
 #!/bin/bash
-
-echo -e "\e[31m 
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Procedimento entre 5 e 15 minutos - por favor, aguarde
-
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . \e[32m Criado por Andredye desenvolvedor Tasker \e[0m"
-
+echo "##### ESTE PROCESSO ENTRE 5 A 20 MINUTOS #####"
+echo "Criado por Andredye desenvolvedor Tasker"
 # Instalar Git e Go
 echo "Instalando Git e Go..."
 pkg install -y git golang &>/dev/null
