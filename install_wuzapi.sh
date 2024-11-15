@@ -1,5 +1,5 @@
-#!/data/data/com.termux/files/usr/bin/bash
-echo "##### ESTE PROCESSO TARDARÁ ENTRE 15 A 20 MINUTOS #####"
+#!/bin/bash
+echo "##### ESTE PROCESO TARDARA ENTRE 15 A 20 MINUTOS #####"
 
 # Instalar Git e Go
 echo "Instalando Git e Go..."
@@ -32,21 +32,10 @@ else
     exit 1
 fi
 
-# Concedendo permissão para aplicativos externos no Termux
-mkdir -p ~/.termux && echo "allow-external-apps=true" > ~/.termux/termux.properties
+# Concedendo permissões para aplicativos externos no Termux
+mkdir -p ~/.termux && echo "allow-external-apps=true" >> ~/.termux/termux.properties
 termux-reload-settings
 echo "Permissão para aplicativos externos configurada."
-
-# Adicionando a reconfiguração automática de permissão no .profile e .bashrc
-for file in ~/.profile ~/.bashrc; do
-    if ! grep -q "allow-external-apps=true" "$file"; then
-        echo -e "\n# Configuração automática para permitir aplicativos externos no Termux após reinício" >> "$file"
-        echo "mkdir -p ~/.termux && echo 'allow-external-apps=true' > ~/.termux/termux.properties && termux-reload-settings" >> "$file"
-        echo "Configuração para reativação automática adicionada ao $file"
-    else
-        echo "Configuração para reativação automática já existente no $file"
-    fi
-done
 
 # Executar WuzAPI
 echo "Executando WuzAPI..."
