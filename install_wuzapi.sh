@@ -37,14 +37,16 @@ mkdir -p ~/.termux && echo "allow-external-apps=true" > ~/.termux/termux.propert
 termux-reload-settings
 echo "Permissão para aplicativos externos configurada."
 
-# Adicionando a reconfiguração automática de permissão no .bashrc
-if ! grep -q "allow-external-apps=true" ~/.bashrc; then
-    echo -e "\n# Configuração automática para permitir aplicativos externos no Termux após reinício" >> ~/.bashrc
-    echo "mkdir -p ~/.termux && echo 'allow-external-apps=true' > ~/.termux/termux.properties && termux-reload-settings" >> ~/.bashrc
-    echo "Configuração para reativação automática adicionada ao .bashrc"
-else
-    echo "Configuração para reativação automática já existente no .bashrc"
-fi
+# Adicionando a reconfiguração automática de permissão no .profile e .bashrc
+for file in ~/.profile ~/.bashrc; do
+    if ! grep -q "allow-external-apps=true" "$file"; then
+        echo -e "\n# Configuração automática para permitir aplicativos externos no Termux após reinício" >> "$file"
+        echo "mkdir -p ~/.termux && echo 'allow-external-apps=true' > ~/.termux/termux.properties && termux-reload-settings" >> "$file"
+        echo "Configuração para reativação automática adicionada ao $file"
+    else
+        echo "Configuração para reativação automática já existente no $file"
+    fi
+done
 
 # Executar WuzAPI
 echo "Executando WuzAPI..."
