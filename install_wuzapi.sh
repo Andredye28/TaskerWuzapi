@@ -1,12 +1,5 @@
 #!/bin/bash
-echo -e "\e[31m
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-.   Procedimento entre 5 e 15 minutos - por favor, aguarde.   .
-. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-\e[32m
-                         Criado por Andredye
-\e[0m"
-
+echo -e "\e[31m . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Procedimento entre 5 e 15 minutos - por favor, aguarde. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . \e[32m Criado por Andredye desenvolvedor Tasker \e[0m"
 
 # Instalar Git e Go
 echo "Instalando Git e Go..."
@@ -39,10 +32,19 @@ else
     exit 1
 fi
 
-# Concedendo permissões para aplicativos externos no Termux
-mkdir -p ~/.termux && echo "allow-external-apps=true" >> ~/.termux/termux.properties
+# Concedendo permissão para aplicativos externos no Termux
+mkdir -p ~/.termux && echo "allow-external-apps=true" > ~/.termux/termux.properties
 termux-reload-settings
 echo "Permissão para aplicativos externos configurada."
+
+# Adicionando a reconfiguração automática de permissão no .bashrc
+if ! grep -q "allow-external-apps=true" ~/.bashrc; then
+    echo -e "\n# Configuração automática para permitir aplicativos externos no Termux após reinício" >> ~/.bashrc
+    echo "mkdir -p ~/.termux && echo 'allow-external-apps=true' > ~/.termux/termux.properties && termux-reload-settings" >> ~/.bashrc
+    echo "Configuração para reativação automática adicionada ao .bashrc"
+else
+    echo "Configuração para reativação automática já existente no .bashrc"
+fi
 
 # Executar WuzAPI
 echo "Executando WuzAPI..."
