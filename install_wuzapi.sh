@@ -1,4 +1,5 @@
 #!/bin/bash
+
 echo -e "\e[31m 
 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . Procedimento entre 5 e 15 minutos - por favor, aguarde
 
