@@ -8,7 +8,7 @@ pkg install -y git golang &>/dev/null
 echo "Git e Go foram instalados com sucesso."
 
 # Clonar o repositório tasker-wuzapi
-echo "Clonando o repositório tasker-wuzapi..."
+echo "Clonando o repositório tasker_wuzapi..."
 git clone https://github.com/Andredye28/tasker_wuzapi &>/dev/null
 echo "Repositório clonado com sucesso."
 
