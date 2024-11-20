@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/data/data/com.termux/files/usr/bin/bash
 echo "##### INICIANDO O PROCESSO DE CONFIGURAÇÃO DO WUZAPI #####"
 echo "##### ESTE PROCESSO PODE LEVAR ENTRE 15 A 20 MINUTOS #####"
 
