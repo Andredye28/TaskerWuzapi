@@ -21,7 +21,7 @@ log_message() {
     fi
 }
 
-# Função para monitorar a saída e parar os logs
+# Função para monitorar a saída
 monitor_output() {
     while IFS= read -r line; do
         echo "$line"  # Mostrar a saída no terminal
@@ -29,7 +29,9 @@ monitor_output() {
 
         # Parar logs se a mensagem específica for encontrada
         if [[ "$line" == *"QR pairing ok! host=0.0.0.0 role=wuzapi"* ]]; then
-            LOGGING_ENABLED=0
+            sleep 2  # Aguardar 2 segundos
+            log_message "Processo concluído"  # Adiciona o log após o atraso
+            LOGGING_ENABLED=0  # Interrompe os logs
             echo "Logs interrompidos após detectar a mensagem: $line"
         fi
     done
@@ -53,12 +55,12 @@ fi
 # Instalar Git e Go
 echo "Instalando Git e Go..."
 log_message "Instalando Git e Go..."
-pkg install -y git golang 2>&1 | monitor_output
+pkg install -y git golang 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
 
 # Clonar o repositório tasker-wuzapi
 echo "Clonando o repositório tasker-wuzapi..."
 log_message "Clonando o repositório tasker-wuzapi..."
-git clone https://github.com/Andredye28/tasker_wuzapi 2>&1 | monitor_output
+git clone https://github.com/Andredye28/tasker_wuzapi 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
 
 # Navegar até o diretório do projeto
 echo "Acessando o diretório do projeto..."
@@ -72,7 +74,7 @@ cd tasker_wuzapi || {
 # Compilar o binário do WuzAPI
 echo "Compilando o binário..."
 log_message "Compilando o binário..."
-go build . 2>&1 | monitor_output
+go build . 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
 
 # Dar permissões de execução ao binário e ao script de inicialização
 chmod +x wuzapi
@@ -84,9 +86,13 @@ fi
 echo "Configurando permissões para aplicativos externos no Termux..."
 log_message "Configurando permissões para aplicativos externos no Termux..."
 mkdir -p ~/.termux && echo "allow-external-apps=true" >> ~/.termux/termux.properties
-termux-reload-settings 2>&1 | monitor_output
+termux-reload-settings 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
 
 # Executar WuzAPI
 echo "Executando WuzAPI..."
 log_message "Executando WuzAPI..."
-./wuzapi 2>&1 | monitor_output
+./wuzapi 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
+
+# Mensagem final
+echo "Processo concluído com sucesso."
+log_message "Processo concluído com sucesso."
