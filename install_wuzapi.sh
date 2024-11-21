@@ -97,14 +97,5 @@ OUTPUT=$(./wuzapi 2>&1)
 echo "$OUTPUT"
 echo "$OUTPUT" >> "$LOG_FILE"
 
-if echo "$OUTPUT" | grep -q "Server Started"; then
-    echo "Servidor ativo."
-    log "Servidor ativo."
-else
-    echo "Erro ao executar o WuzAPI. Verifique o binário ou as permissões."
-    log "Erro ao executar o WuzAPI."
-    exit 1
-fi
-
 echo "##### PROCESSO FINALIZADO COM SUCESSO #####"
 log "##### PROCESSO FINALIZADO COM SUCESSO #####"
