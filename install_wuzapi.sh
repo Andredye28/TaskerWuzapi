@@ -17,14 +17,14 @@ fi
 # Função para registrar mensagens no log
 log_message() {
     if [ "$LOGGING_ENABLED" -eq 1 ]; then
-        echo "$1" >> "$LOG_FILE"
+        echo -e "\033[1;33m$1\033[0m" >> "$LOG_FILE"
     fi
 }
 
 # Função para monitorar a saída
 monitor_output() {
     while IFS= read -r line; do
-        echo "$line"  # Mostrar a saída no terminal
+    echo -e "\033[1;33m$line\033[0m"  # Mostrar a saída no terminal
         log_message "$line"  # Registrar no log se habilitado
 
         # Parar logs se a mensagem específica for encontrada
@@ -32,28 +32,53 @@ monitor_output() {
             sleep 2  # Aguardar 2 segundos
             log_message "Processo concluído"  # Adiciona o log após o atraso
             LOGGING_ENABLED=0  # Interrompe os logs
-            echo "Logs interrompidos após detectar a mensagem: $line"
+            echo -e "\033[1;33mLogs interrompidos após detectar a mensagem: $line\033[0m"
         fi
     done
 }
 
 # Redirecionar para o diretório home do Termux
 cd /data/data/com.termux/files/home
+ "echo -e "\033[1;33m:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+echo -e "                                          "
+echo -e "                 🚀  INICIANDO PROCESSO DE CONFIGURACAO 🚀
+                         DO TASKER-WUZAPI-CHATBOT
+       "
+echo -e "                                          "
+echo -e "                 👋   BEM-VINDO AO TASKER-WUZAPI-CHATBOT   👋          "
+echo -e "                                                "
+echo -e "                                          "
+echo -e "                    A INSTALACAO PODE LEVAR ATE 10 MINUTOS
+                    POR FAVOR AGUARDE O PROCESSO FINALIZAR"
+echo -e "
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\033[0m""
+log_message ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-echo "##### INICIANDO O PROCESSO DE CONFIGURAÇÃO DO WUZAPI #####"
-log_message "##### INICIANDO O PROCESSO DE CONFIGURAÇÃO DO WUZAPI #####"
-echo "##### ESTE PROCESSO PODE LEVAR ENTRE 15 A 20 MINUTOS #####"
-log_message "##### ESTE PROCESSO PODE LEVAR ENTRE 15 A 20 MINUTOS #####"
+                 🚀  INICIANDO PROCESSO DE CONFIGURACAO 🚀
+                         DO TASKER-WUZAPI-CHATBOT
+       
+
+                 👋   BEM-VINDO AO TASKER-WUZAPI-CHATBOT   👋          
+
+
+                    A INSTALACAO PODE LEVAR ATE 10 MINUTOS
+                    POR FAVOR AGUARDE O PROCESSO FINALIZAR
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+"
+
 
 # Remover diretório existente se já estiver presente
 if [ -d "tasker_wuzapi" ]; then
     rm -rf tasker_wuzapi
-    echo "Diretório anterior do WuzAPI removido."
+    echo -e "\033[1;33mDIRETÓRIO ANTERIOR DO TASKER-WUZAPI REMOVIDO PARA NOVA CONFIGURACAO\033[0m"
+
     log_message "Diretório anterior do WuzAPI removido."
 fi
 
 # Instalar Git e Go
-echo "Instalando Git e Go..."
+echo -e "\033[1;33mINSTALANDO GIT E GO...\033[0m"
+
 log_message "Instalando Git e Go..."
 pkg install -y git golang 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
 
