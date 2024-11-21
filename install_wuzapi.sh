@@ -16,56 +16,76 @@ log_message() {
     echo "$1" >> "$LOG_FILE"
 }
 
-# Verificar requisitos básicos
-for cmd in pkg git go nc; do
-    if ! command -v "$cmd" &>/dev/null; then
-        echo "Erro: O comando '$cmd' não está disponível. Instale-o antes de continuar."
-        log_message "Erro: O comando '$cmd' não está disponível. Instale-o antes de continuar."
-        exit 1
-    fi
-done
-
 echo "##### INICIANDO O PROCESSO DE CONFIGURAÇÃO DO WUZAPI #####"
 log_message "##### INICIANDO O PROCESSO DE CONFIGURAÇÃO DO WUZAPI #####"
 echo "##### ESTE PROCESSO PODE LEVAR ENTRE 15 A 20 MINUTOS #####"
 log_message "##### ESTE PROCESSO PODE LEVAR ENTRE 15 A 20 MINUTOS #####"
 
-# Instalar Git e Go
-echo "Instalando Git e Go..."
-log_message "Instalando Git e Go..."
-if pkg install -y git golang &>/dev/null; then
-    echo "Git e Go foram instalados com sucesso."
-    log_message "Git e Go foram instalados com sucesso."
+# Verificar se o Git está instalado, senão instalá-lo
+echo "Verificando a presença do Git..."
+log_message "Verificando a presença do Git..."
+if ! command -v git &>/dev/null; then
+    echo "Git não encontrado. Instalando..."
+    log_message "Git não encontrado. Instalando..."
+    if pkg install -y git &>/dev/null; then
+        echo "Git instalado com sucesso."
+        log_message "Git instalado com sucesso."
+    else
+        echo "Erro ao instalar o Git. Verifique sua conexão ou tente novamente."
+        log_message "Erro ao instalar o Git. Verifique sua conexão ou tente novamente."
+        exit 1
+    fi
 else
-    echo "Erro ao instalar Git e Go. Verifique sua conexão ou tente novamente."
-    log_message "Erro ao instalar Git e Go. Verifique sua conexão ou tente novamente."
-    exit 1
+    echo "Git já está instalado."
+    log_message "Git já está instalado."
 fi
 
-# Instalar Netcat ou alternativas
+# Verificar se o Go está instalado, senão instalá-lo
+echo "Verificando a presença do Go..."
+log_message "Verificando a presença do Go..."
+if ! command -v go &>/dev/null; then
+    echo "Go não encontrado. Instalando..."
+    log_message "Go não encontrado. Instalando..."
+    if pkg install -y golang &>/dev/null; then
+        echo "Go instalado com sucesso."
+        log_message "Go instalado com sucesso."
+    else
+        echo "Erro ao instalar o Go. Verifique sua conexão ou tente novamente."
+        log_message "Erro ao instalar o Go. Verifique sua conexão ou tente novamente."
+        exit 1
+    fi
+else
+    echo "Go já está instalado."
+    log_message "Go já está instalado."
+fi
+
+# Verificar e instalar Netcat ou alternativas
 echo "Instalando Netcat (nc) ou alternativas..."
 log_message "Instalando Netcat (nc) ou alternativas..."
-if ! command -v nc &>/dev/null && ! pkg install -y netcat &>/dev/null; then
-    echo "Erro ao instalar Netcat. Verifique sua conexão ou tente novamente."
-    log_message "Erro ao instalar Netcat. Verifique sua conexão ou tente novamente."
-    exit 1
+if ! command -v nc &>/dev/null && ! command -v ncat &>/dev/null; then
+    if pkg install -y netcat &>/dev/null || pkg install -y nmap-ncat &>/dev/null; then
+        echo "Netcat ou alternativa instalada com sucesso."
+        log_message "Netcat ou alternativa instalada com sucesso."
+    else
+        echo "Erro ao instalar Netcat ou alternativas."
+        log_message "Erro ao instalar Netcat ou alternativas."
+        exit 1
+    fi
+else
+    echo "Netcat já está disponível."
+    log_message "Netcat já está disponível."
 fi
 
 # Clonar o repositório tasker-wuzapi
 echo "Clonando o repositório tasker-wuzapi..."
 log_message "Clonando o repositório tasker-wuzapi..."
-if [ -d "tasker_wuzapi" ]; then
-    echo "O repositório já foi clonado anteriormente."
-    log_message "O repositório já foi clonado anteriormente."
+if git clone https://github.com/Andredye28/tasker_wuzapi &>/dev/null; then
+    echo "Repositório clonado com sucesso."
+    log_message "Repositório clonado com sucesso."
 else
-    if git clone https://github.com/Andredye28/tasker_wuzapi &>/dev/null; then
-        echo "Repositório clonado com sucesso."
-        log_message "Repositório clonado com sucesso."
-    else
-        echo "Erro ao clonar o repositório. Verifique o link ou sua conexão."
-        log_message "Erro ao clonar o repositório. Verifique o link ou sua conexão."
-        exit 1
-    fi
+    echo "Erro ao clonar o repositório. Verifique o link ou sua conexão."
+    log_message "Erro ao clonar o repositório. Verifique o link ou sua conexão."
+    exit 1
 fi
 
 # Navegar até o diretório do projeto
@@ -76,15 +96,6 @@ cd tasker_wuzapi || {
     log_message "Erro ao acessar o diretório do projeto."; 
     exit 1; 
 }
-
-# Verificar se o Go está configurado corretamente
-echo "Verificando configuração do Go..."
-log_message "Verificando configuração do Go..."
-if ! command -v go &>/dev/null; then
-    echo "Erro: Go não está configurado corretamente. Verifique sua instalação."
-    log_message "Erro: Go não está configurado corretamente. Verifique sua instalação."
-    exit 1
-fi
 
 # Compilar o binário do WuzAPI
 echo "Compilando o binário..."
@@ -98,7 +109,7 @@ else
     exit 1
 fi
 
-# Dar permissões de execução
+# Configurar permissões para execução
 chmod +x wuzapi
 if [ -f "./start_wuzapi.sh" ]; then
     chmod +x start_wuzapi.sh
@@ -110,12 +121,16 @@ else
 fi
 
 # Configurar permissões no Termux
-PERMISSION_FILE="$HOME/.termux/termux.properties"
-if ! grep -q "allow-external-apps=true" "$PERMISSION_FILE"; then
-    echo "allow-external-apps=true" >> "$PERMISSION_FILE"
-    termux-reload-settings
+echo "Configurando permissões no Termux..."
+log_message "Configurando permissões no Termux..."
+mkdir -p ~/.termux && echo "allow-external-apps=true" >> ~/.termux/termux.properties
+if termux-reload-settings; then
     echo "Permissões configuradas e recarregadas com sucesso."
     log_message "Permissões configuradas e recarregadas com sucesso."
+else
+    echo "Erro ao recarregar as configurações do Termux."
+    log_message "Erro ao recarregar as configurações do Termux."
+    exit 1
 fi
 
 # Executar WuzAPI
