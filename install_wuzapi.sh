@@ -21,6 +21,41 @@ log_message "##### INICIANDO O PROCESSO DE CONFIGURAÇÃO DO WUZAPI #####"
 echo "##### ESTE PROCESSO PODE LEVAR ENTRE 15 A 20 MINUTOS #####"
 log_message "##### ESTE PROCESSO PODE LEVAR ENTRE 15 A 20 MINUTOS #####"
 
+# Função para tentar clonar o repositório
+clone_repository() {
+    echo "Clonando o repositório tasker-wuzapi..."
+    log_message "Clonando o repositório tasker-wuzapi..."
+    if git clone https://github.com/Andredye28/tasker_wuzapi &>/dev/null; then
+        echo "Repositório clonado com sucesso."
+        log_message "Repositório clonado com sucesso."
+        return 0
+    else
+        echo "Erro ao clonar o repositório. Verifique o link ou sua conexão."
+        log_message "Erro ao clonar o repositório. Verifique o link ou sua conexão."
+        return 1
+    fi
+}
+
+# Tentar clonar o repositório até 2 vezes
+attempts=0
+max_attempts=2
+while [ $attempts -lt $max_attempts ]; do
+    ((attempts++))
+    if clone_repository; then
+        break
+    fi
+    echo "Tentando novamente... ($attempts/$max_attempts)"
+    log_message "Tentando novamente... ($attempts/$max_attempts)"
+    if [ $attempts -eq $max_attempts ]; then
+        echo "Falha ao clonar o repositório após $max_attempts tentativas."
+        log_message "Falha ao clonar o repositório após $max_attempts tentativas."
+        exit 1
+    fi
+    echo "Removendo repositório antigo..."
+    log_message "Removendo repositório antigo..."
+    rm -rf tasker_wuzapi start_wuzapi.sh
+done
+
 # Instalar Git
 echo "Verificando a presença do Git..."
 log_message "Verificando a presença do Git..."
@@ -77,18 +112,6 @@ elif pkg install -y netcat &>/dev/null || pkg install -y nmap-ncat &>/dev/null; 
 else
     echo "Erro ao instalar Netcat ou alternativas."
     log_message "Erro ao instalar Netcat ou alternativas."
-    exit 1
-fi
-
-# Clonar o repositório tasker-wuzapi
-echo "Clonando o repositório tasker-wuzapi..."
-log_message "Clonando o repositório tasker-wuzapi..."
-if git clone https://github.com/Andredye28/tasker_wuzapi &>/dev/null; then
-    echo "Repositório clonado com sucesso."
-    log_message "Repositório clonado com sucesso."
-else
-    echo "Erro ao clonar o repositório. Verifique o link ou sua conexão."
-    log_message "Erro ao clonar o repositório. Verifique o link ou sua conexão."
     exit 1
 fi
 
