@@ -82,8 +82,8 @@ cd tasker_wuzapi || {
 }
 
 # Compilar o binário do WuzAPI
-echo "Compilando o binário..."
-log_message "Compilando o binário..."
+echo "COMPILANDO BINÁRIO"
+log_message "COMPILANDO BINÁRIO"
 go build . 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
 
 # Dar permissões de execução ao binário e ao script de inicialização
@@ -99,6 +99,6 @@ mkdir -p ~/.termux && echo "allow-external-apps=true" >> ~/.termux/termux.proper
 termux-reload-settings 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
 
 # Executar WuzAPI
-echo "Executando WuzAPI..."
-log_message "Executando WuzAPI..."
+echo "EXECUTANDO API DO WUZAPI"
+log_message "EXECUTANDO API DO WUZAPI"
 ./wuzapi 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
