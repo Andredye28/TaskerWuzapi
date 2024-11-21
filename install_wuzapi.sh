@@ -146,31 +146,22 @@ WUZAPI_PID=$!
 # Dar tempo para o servidor inicializar
 sleep 5
 
-# Verificar se o servidor está ativo com tentativas
+# Verificar se o servidor está ativo
 SERVER_HOST="0.0.0.0"
 SERVER_PORT="8080"
-MAX_ATTEMPTS=5
-attempt=1
-
 echo "Verificando se o servidor está ativo em $SERVER_HOST:$SERVER_PORT..."
 log_message "Verificando se o servidor está ativo em $SERVER_HOST:$SERVER_PORT..."
 
-while ! nc -z "$SERVER_HOST" "$SERVER_PORT" &>/dev/null; do
-    if [ $attempt -ge $MAX_ATTEMPTS ]; then
-        echo "Erro: O servidor não está ativo em $SERVER_HOST:$SERVER_PORT após $attempt tentativas."
-        log_message "Erro: O servidor não está ativo em $SERVER_HOST:$SERVER_PORT após $attempt tentativas."
-        kill $WUZAPI_PID &>/dev/null
-        exit 1
-    fi
-
-    echo "Tentativa $attempt de $MAX_ATTEMPTS falhou. Tentando novamente em 5 segundos..."
-    log_message "Tentativa $attempt de $MAX_ATTEMPTS falhou. Tentando novamente em 5 segundos..."
-    attempt=$((attempt + 1))
-    sleep 5
-done
-
-echo "Servidor está ativo em $SERVER_HOST:$SERVER_PORT."
-log_message "Servidor está ativo em $SERVER_HOST:$SERVER_PORT."
+if nc -z "$SERVER_HOST" "$SERVER_PORT"; then
+    echo "Servidor está ativo em $SERVER_HOST:$SERVER_PORT."
+    log_message "Servidor está ativo em $SERVER_HOST:$SERVER_PORT."
+else
+    echo "Erro: O servidor não está ativo em $SERVER_HOST:$SERVER_PORT."
+    log_message "Erro: O servidor não está ativo em $SERVER_HOST:$SERVER_PORT."
+    # Encerrar o WuzAPI se não inicializar corretamente
+    kill $WUZAPI_PID &>/dev/null
+    exit 1
+fi
 
 # Mensagem final de sucesso
 echo "##### PROCESSO FINALIZADO COM SUCESSO #####"
