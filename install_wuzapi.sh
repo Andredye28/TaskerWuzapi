@@ -29,8 +29,8 @@ monitor_output() {
 
         # Parar logs se a mensagem específica for encontrada
         if [[ "$line" == *"QR pairing ok! host=0.0.0.0 role=wuzapi"* ]]; then
-            sleep 2  # Aguardar 2 segundos
-            log_message "Processo concluído"  # Adiciona o log após o atraso
+            sleep 5  # Aguardar 5 segundos
+            log_message "CONEXÃO COM SERVIDOR ESTABELECIDA COM SUCESSO"  # Adiciona o log após o atraso
             LOGGING_ENABLED=0  # Interrompe os logs
             echo "Logs interrompidos após detectar a mensagem: $line"
         fi
@@ -40,34 +40,44 @@ monitor_output() {
 # Redirecionar para o diretório home do Termux
 cd /data/data/com.termux/files/home
 
-echo "##### INICIANDO O PROCESSO DE CONFIGURAÇÃO DO WUZAPI #####"
-log_message "##### INICIANDO O PROCESSO DE CONFIGURAÇÃO DO WUZAPI #####"
-echo "##### ESTE PROCESSO PODE LEVAR ENTRE 15 A 20 MINUTOS #####"
-log_message "##### ESTE PROCESSO PODE LEVAR ENTRE 15 A 20 MINUTOS #####"
+echo "A INSTALACAO PODE LEVAR ATE 10 MINUTOS POR FAVOR AGUARDE O PROCESSO FINALIZAR"
+log_message ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+                 🚀  INICIANDO PROCESSO DE CONFIGURACAO 🚀
+                         DO TASKER-WUZAPI-CHATBOT
+       
+
+                 👋   BEM-VINDO AO TASKER-WUZAPI-CHATBOT   👋          
+
+
+                    A INSTALACAO PODE LEVAR ATE 10 MINUTOS
+                    POR FAVOR AGUARDE O PROCESSO FINALIZAR
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+"
 # Remover diretório existente se já estiver presente
 if [ -d "tasker_wuzapi" ]; then
     rm -rf tasker_wuzapi
-    echo "Diretório anterior do WuzAPI removido."
-    log_message "Diretório anterior do WuzAPI removido."
+    echo "DIRETÓRIO tasker_wuzapi REMOVIDO PARA SER SUBSTITUÍDO"
+    log_message "DIRETÓRIO tasker_wuzapi REMOVIDO PARA SER SUBSTITUÍDO"
 fi
 
 # Instalar Git e Go
-echo "Instalando Git e Go..."
-log_message "Instalando Git e Go..."
+echo "INSTALANDO GIT E GO"
+log_message "INSTALANDO GIT E GO"
 pkg install -y git golang 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
 
 # Clonar o repositório tasker-wuzapi
-echo "Clonando o repositório tasker-wuzapi..."
-log_message "Clonando o repositório tasker-wuzapi..."
+echo "CLONANDO REPOSITÓRIO tasker-wuzapi....."
+log_message "CLONANDO REPOSITÓRIO tasker-wuzapi....."
 git clone https://github.com/Andredye28/tasker_wuzapi 2>&1 | while IFS= read -r line; do monitor_output <<< "$line"; done
 
 # Navegar até o diretório do projeto
-echo "Acessando o diretório do projeto..."
-log_message "Acessando o diretório do projeto..."
+echo "ACESSANDO DIRETÓRIO DO PROJETO tasker-wuzapi"
+log_message "ACESSANDO DIRETÓRIO DO PROJETO tasker-wuzapi"
 cd tasker_wuzapi || { 
-    echo "Erro ao acessar o diretório do projeto."; 
-    log_message "Erro ao acessar o diretório do projeto."; 
+    echo "ERRO AO ACESSAR O DIRETÓRIO DO PROJETO tasker-wuzapi"; 
+    log_message "ERRO AO ACESSAR O DIRETÓRIO DO PROJETO tasker-wuzapi; 
     exit 1; 
 }
 
