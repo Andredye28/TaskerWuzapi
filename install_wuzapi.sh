@@ -34,24 +34,23 @@ else
 fi
 
 # Instalar Netcat ou alternativas
-echo "Instalando Netcat (nc)..."
-log_message "Instalando Netcat (nc)..."
-if pkg install -y netcat &>/dev/null; then
-    echo "Netcat foi instalado com sucesso."
-    log_message "Netcat foi instalado com sucesso."
-elif pkg install -y nmap-ncat &>/dev/null; then
-    echo "Alternativa Netcat (nmap-ncat) foi instalada com sucesso."
-    log_message "Alternativa Netcat (nmap-ncat) foi instalada com sucesso."
+echo "Instalando Netcat (nc) ou alternativas..."
+log_message "Instalando Netcat (nc) ou alternativas..."
+if command -v nc &>/dev/null; then
+    echo "Netcat já está disponível no sistema."
+    log_message "Netcat já está disponível no sistema."
+elif pkg install -y netcat &>/dev/null || pkg install -y nmap-ncat &>/dev/null; then
+    if command -v nc &>/dev/null || command -v ncat &>/dev/null; then
+        echo "Alternativa Netcat (nmap-ncat) foi instalada com sucesso."
+        log_message "Alternativa Netcat (nmap-ncat) foi instalada com sucesso."
+    else
+        echo "Erro: Netcat ou alternativas não estão disponíveis após a instalação."
+        log_message "Erro: Netcat ou alternativas não estão disponíveis após a instalação."
+        exit 1
+    fi
 else
-    echo "Erro ao instalar Netcat ou suas alternativas. Verifique sua conexão ou tente novamente."
-    log_message "Erro ao instalar Netcat ou suas alternativas. Verifique sua conexão ou tente novamente."
-    exit 1
-fi
-
-# Verificar se o Netcat está disponível
-if ! command -v nc &>/dev/null; then
-    echo "Erro: Netcat não está disponível após a instalação."
-    log_message "Erro: Netcat não está disponível após a instalação."
+    echo "Erro ao instalar Netcat ou alternativas. Verifique sua conexão ou tente novamente."
+    log_message "Erro ao instalar Netcat ou alternativas. Verifique sua conexão ou tente novamente."
     exit 1
 fi
 
