@@ -11,10 +11,19 @@ else
     > "$LOG_FILE"  # Limpar o conteúdo do arquivo existente
 fi
 
-# Função para registrar mensagens no log sem interferir no terminal
+# Função para registrar mensagens no log
 log_message() {
     echo "$1" >> "$LOG_FILE"
 }
+
+# Verificar requisitos básicos
+for cmd in pkg git go nc; do
+    if ! command -v "$cmd" &>/dev/null; then
+        echo "Erro: O comando '$cmd' não está disponível. Instale-o antes de continuar."
+        log_message "Erro: O comando '$cmd' não está disponível. Instale-o antes de continuar."
+        exit 1
+    fi
+done
 
 echo "##### INICIANDO O PROCESSO DE CONFIGURAÇÃO DO WUZAPI #####"
 log_message "##### INICIANDO O PROCESSO DE CONFIGURAÇÃO DO WUZAPI #####"
@@ -36,34 +45,27 @@ fi
 # Instalar Netcat ou alternativas
 echo "Instalando Netcat (nc) ou alternativas..."
 log_message "Instalando Netcat (nc) ou alternativas..."
-if command -v nc &>/dev/null; then
-    echo "Netcat já está disponível no sistema."
-    log_message "Netcat já está disponível no sistema."
-elif pkg install -y netcat &>/dev/null || pkg install -y nmap-ncat &>/dev/null; then
-    if command -v nc &>/dev/null || command -v ncat &>/dev/null; then
-        echo "Alternativa Netcat (nmap-ncat) foi instalada com sucesso."
-        log_message "Alternativa Netcat (nmap-ncat) foi instalada com sucesso."
-    else
-        echo "Erro: Netcat ou alternativas não estão disponíveis após a instalação."
-        log_message "Erro: Netcat ou alternativas não estão disponíveis após a instalação."
-        exit 1
-    fi
-else
-    echo "Erro ao instalar Netcat ou alternativas. Verifique sua conexão ou tente novamente."
-    log_message "Erro ao instalar Netcat ou alternativas. Verifique sua conexão ou tente novamente."
+if ! command -v nc &>/dev/null && ! pkg install -y netcat &>/dev/null; then
+    echo "Erro ao instalar Netcat. Verifique sua conexão ou tente novamente."
+    log_message "Erro ao instalar Netcat. Verifique sua conexão ou tente novamente."
     exit 1
 fi
 
 # Clonar o repositório tasker-wuzapi
 echo "Clonando o repositório tasker-wuzapi..."
 log_message "Clonando o repositório tasker-wuzapi..."
-if git clone https://github.com/Andredye28/tasker_wuzapi &>/dev/null; then
-    echo "Repositório clonado com sucesso."
-    log_message "Repositório clonado com sucesso."
+if [ -d "tasker_wuzapi" ]; then
+    echo "O repositório já foi clonado anteriormente."
+    log_message "O repositório já foi clonado anteriormente."
 else
-    echo "Erro ao clonar o repositório. Verifique o link ou sua conexão."
-    log_message "Erro ao clonar o repositório. Verifique o link ou sua conexão."
-    exit 1
+    if git clone https://github.com/Andredye28/tasker_wuzapi &>/dev/null; then
+        echo "Repositório clonado com sucesso."
+        log_message "Repositório clonado com sucesso."
+    else
+        echo "Erro ao clonar o repositório. Verifique o link ou sua conexão."
+        log_message "Erro ao clonar o repositório. Verifique o link ou sua conexão."
+        exit 1
+    fi
 fi
 
 # Navegar até o diretório do projeto
@@ -96,7 +98,7 @@ else
     exit 1
 fi
 
-# Dar permissões de execução ao binário e ao script de inicialização
+# Dar permissões de execução
 chmod +x wuzapi
 if [ -f "./start_wuzapi.sh" ]; then
     chmod +x start_wuzapi.sh
@@ -107,17 +109,13 @@ else
     log_message "Aviso: O script de inicialização 'start_wuzapi.sh' não foi encontrado."
 fi
 
-# Conceder permissões para aplicativos externos no Termux
-echo "Configurando permissões para aplicativos externos no Termux..."
-log_message "Configurando permissões para aplicativos externos no Termux..."
-mkdir -p ~/.termux && echo "allow-external-apps=true" >> ~/.termux/termux.properties
-if termux-reload-settings; then
+# Configurar permissões no Termux
+PERMISSION_FILE="$HOME/.termux/termux.properties"
+if ! grep -q "allow-external-apps=true" "$PERMISSION_FILE"; then
+    echo "allow-external-apps=true" >> "$PERMISSION_FILE"
+    termux-reload-settings
     echo "Permissões configuradas e recarregadas com sucesso."
     log_message "Permissões configuradas e recarregadas com sucesso."
-else
-    echo "Erro ao recarregar as configurações do Termux."
-    log_message "Erro ao recarregar as configurações do Termux."
-    exit 1
 fi
 
 # Executar WuzAPI
