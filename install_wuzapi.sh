@@ -3,6 +3,9 @@
 # Caminho do arquivo de log
 LOG_FILE="/storage/emulated/0/Tasker/termux/TASKER-WUZAPI/logs/install.log"
 
+# Variável de controle para o log
+LOGGING_ENABLED=1
+
 # Verificar e criar o arquivo de log
 if [ ! -f "$LOG_FILE" ]; then
     mkdir -p "$(dirname "$LOG_FILE")" || { echo "Erro ao criar o diretório de logs."; exit 1; }
@@ -11,9 +14,25 @@ else
     > "$LOG_FILE"  # Limpar o conteúdo do arquivo existente
 fi
 
-# Função para registrar mensagens no log sem interferir no terminal
+# Função para registrar mensagens no log
 log_message() {
-    echo "$1" >> "$LOG_FILE"
+    if [ "$LOGGING_ENABLED" -eq 1 ]; then
+        echo "$1" >> "$LOG_FILE"
+    fi
+}
+
+# Função para monitorar a saída e parar os logs
+monitor_output() {
+    while IFS= read -r line; do
+        echo "$line"  # Mostrar a saída no terminal
+        log_message "$line"  # Registrar no log se habilitado
+
+        # Parar logs se a mensagem específica for encontrada
+        if [[ "$line" == *"QR pairing ok! host=0.0.0.0 role=wuzapi"* ]]; then
+            LOGGING_ENABLED=0
+            echo "Logs interrompidos após detectar a mensagem: $line"
+        fi
+    done
 }
 
 # Redirecionar para o diretório home do Termux
@@ -34,12 +53,12 @@ fi
 # Instalar Git e Go
 echo "Instalando Git e Go..."
 log_message "Instalando Git e Go..."
-pkg install -y git golang 2>&1 | tee -a "$LOG_FILE"
+pkg install -y git golang 2>&1 | monitor_output
 
 # Clonar o repositório tasker-wuzapi
 echo "Clonando o repositório tasker-wuzapi..."
 log_message "Clonando o repositório tasker-wuzapi..."
-git clone https://github.com/Andredye28/tasker_wuzapi 2>&1 | tee -a "$LOG_FILE"
+git clone https://github.com/Andredye28/tasker_wuzapi 2>&1 | monitor_output
 
 # Navegar até o diretório do projeto
 echo "Acessando o diretório do projeto..."
@@ -53,7 +72,7 @@ cd tasker_wuzapi || {
 # Compilar o binário do WuzAPI
 echo "Compilando o binário..."
 log_message "Compilando o binário..."
-go build . 2>&1 | tee -a "$LOG_FILE"
+go build . 2>&1 | monitor_output
 
 # Dar permissões de execução ao binário e ao script de inicialização
 chmod +x wuzapi
@@ -65,9 +84,9 @@ fi
 echo "Configurando permissões para aplicativos externos no Termux..."
 log_message "Configurando permissões para aplicativos externos no Termux..."
 mkdir -p ~/.termux && echo "allow-external-apps=true" >> ~/.termux/termux.properties
-termux-reload-settings 2>&1 | tee -a "$LOG_FILE"
+termux-reload-settings 2>&1 | monitor_output
 
 # Executar WuzAPI
 echo "Executando WuzAPI..."
 log_message "Executando WuzAPI..."
-./wuzapi 2>&1 | tee -a "$LOG_FILE"
+./wuzapi 2>&1 | monitor_output
