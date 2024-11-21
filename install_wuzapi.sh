@@ -33,6 +33,18 @@ else
     exit 1
 fi
 
+# Instalar Netcat
+echo "Instalando Netcat (nc)..."
+log_message "Instalando Netcat (nc)..."
+if pkg install -y netcat &>/dev/null; then
+    echo "Netcat foi instalado com sucesso."
+    log_message "Netcat foi instalado com sucesso."
+else
+    echo "Erro ao instalar Netcat. Verifique sua conexão ou tente novamente."
+    log_message "Erro ao instalar Netcat. Verifique sua conexão ou tente novamente."
+    exit 1
+fi
+
 # Clonar o repositório tasker-wuzapi
 echo "Clonando o repositório tasker-wuzapi..."
 log_message "Clonando o repositório tasker-wuzapi..."
@@ -109,6 +121,19 @@ else
     echo "Erro ao executar o WuzAPI. Verifique o binário ou as permissões."
     log_message "Erro ao executar o WuzAPI. Verifique o binário ou as permissões."
     exit 1
+fi
+
+# Verificar se o servidor está ativo
+SERVER_HOST="0.0.0.0"
+SERVER_PORT="8080"
+echo "Verificando se o servidor está ativo em $SERVER_HOST:$SERVER_PORT..."
+log_message "Verificando se o servidor está ativo em $SERVER_HOST:$SERVER_PORT..."
+if nc -z -v "$SERVER_HOST" "$SERVER_PORT" &>/dev/null; then
+    echo "Servidor está ativo em $SERVER_HOST:$SERVER_PORT."
+    log_message "Servidor está ativo em $SERVER_HOST:$SERVER_PORT."
+else
+    echo "Erro: O servidor não está ativo em $SERVER_HOST:$SERVER_PORT."
+    log_message "Erro: O servidor não está ativo em $SERVER_HOST:$SERVER_PORT."
 fi
 
 echo "##### PROCESSO FINALIZADO COM SUCESSO #####"
